@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:memex/utiils/share_helper.dart';
@@ -25,7 +26,6 @@ class MemeScreenState extends State<MemeScreen> {
 
   int _draggedIndex = -1;
   int _targetIndex = -1;
-
   GlobalKey globalKey = GlobalKey();
 
   final List<Color> _colors = [
@@ -69,53 +69,53 @@ class MemeScreenState extends State<MemeScreen> {
         centerTitle: true,
         backgroundColor: const Color(0xFF17181A),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            RepaintBoundary(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Expanded(
+            child: RepaintBoundary(
               key: globalKey,
               child: draggableView(),
             ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                MaterialButton(
-                  onPressed: () async {
-                    File file =
-                        await WidgetToImage.getImageFromWidget(globalKey);
-                    await ShareHelper.shareImageFromPath(
-                      fileName: "memified",
-                      imageData: file.readAsBytesSync(),
-                    );
-                  },
-                  color: Colors.blue,
-                  textColor: Colors.white,
-                  child: const Text("Share Image"),
-                ),
-                MaterialButton(
-                  onPressed: () async {
-                    final XFile? image = await ImagePicker().pickImage(
-                      source: ImageSource.gallery,
-                    );
-                    if (image != null) {
-                      setState(() {
-                        _imageLists[0].add(image);
-                      });
-                    }
-                  },
-                  color: Colors.blue,
-                  textColor: Colors.white,
-                  child: const Text("Add Image"),
-                ),
-              ],
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              MaterialButton(
+                onPressed: () async {
+                  File file =
+                      await WidgetToImage.getImageFromWidget(globalKey);
+                  await ShareHelper.shareImageFromPath(
+                    fileName: "memified",
+                    imageData: file.readAsBytesSync(),
+                  );
+                },
+                color: Colors.blue,
+                textColor: Colors.white,
+                child: const Text("Share Image"),
+              ),
+              MaterialButton(
+                onPressed: () async {
+                  final XFile? image = await ImagePicker().pickImage(
+                    source: ImageSource.gallery,
+                  );
+                  if (image != null) {
+                    setState(() {
+                      _imageLists[0].add(image);
+                    });
+                  }
+                },
+                color: Colors.blue,
+                textColor: Colors.white,
+                child: const Text("Add Image"),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -124,7 +124,7 @@ class MemeScreenState extends State<MemeScreen> {
   Widget _buildListView(int index) {
     return Expanded(
       child: Container(
-        height: 120,
+        height: 100,
         width: double.infinity,
         margin: const EdgeInsets.all(8),
         decoration: BoxDecoration(
@@ -162,6 +162,8 @@ class MemeScreenState extends State<MemeScreen> {
                       ),
                       child: Image.file(
                         File(_imageLists[index][idx]?.path ?? ""),
+                        height: 100,
+                        width: 100,
                         fit: BoxFit.cover,
                       ),
                       onDragStarted: () {
@@ -187,28 +189,30 @@ class MemeScreenState extends State<MemeScreen> {
   }
 
   Widget draggableView() {
-    return Column(
-      children: _imageLists.map((imageList) {
-        return Container(
-          padding: const EdgeInsets.all(8),
-          color: _colors[_imageLists.indexOf(imageList)],
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SizedBox(
-                width: 50,
-                child: Text(
-                  widget.text[_imageLists.indexOf(imageList)],
-                  style: const TextStyle(color: Colors.black, fontSize: 20),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+    return SingleChildScrollView(
+      child: Column(
+        children: _imageLists.map((imageList) {
+          return Container(
+            padding: const EdgeInsets.all(8),
+            color: _colors[_imageLists.indexOf(imageList)],
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(
+                  width: 100,
+                  child: Text(
+                    widget.text[_imageLists.indexOf(imageList)],
+                    style: const TextStyle(color: Colors.black, fontSize: 20),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-              _buildListView(_imageLists.indexOf(imageList)),
-            ],
-          ),
-        );
-      }).toList(),
+                _buildListView(_imageLists.indexOf(imageList)),
+              ],
+            ),
+          );
+        }).toList(),
+      ),
     );
   }
 }

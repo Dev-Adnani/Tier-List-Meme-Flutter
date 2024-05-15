@@ -135,6 +135,7 @@ class _EnterCategoryScreenState extends State<EnterCategoryScreen> {
                   onPressed: () {
                     if (formKey.currentState!.validate() &&
                         (images?.length ?? 0) > 1) {
+                      text = [];
                       for (int i = 0; i < _currentSliderValue; i++) {
                         text.add(textEditingControllers[i].text);
                       }
