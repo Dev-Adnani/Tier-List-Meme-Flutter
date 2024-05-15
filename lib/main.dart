@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:memex/enter_category_screen.dart';
+import 'package:memex/screens/enter_category_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

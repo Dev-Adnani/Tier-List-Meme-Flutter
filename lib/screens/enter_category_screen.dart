@@ -1,9 +1,8 @@
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:memex/custom_text_field.dart';
-import 'package:memex/meme_screen.dart';
+import 'package:memex/widget/custom_text_field.dart';
+import 'package:memex/screens/meme_screen.dart';
 
 class EnterCategoryScreen extends StatefulWidget {
   const EnterCategoryScreen({super.key});
@@ -42,8 +41,7 @@ class _EnterCategoryScreenState extends State<EnterCategoryScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF17181A),
       appBar: AppBar(
-        title: const Text("Enter Category Screen",
-            style: TextStyle(color: Colors.white)),
+        title: const Text("Tier Screen", style: TextStyle(color: Colors.white)),
         centerTitle: true,
         backgroundColor: const Color(0xFF17181A),
       ),
@@ -53,6 +51,12 @@ class _EnterCategoryScreenState extends State<EnterCategoryScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            const Text(
+                "Using Slider , Select Number of Tier You Want to Create",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                )),
             Slider(
               value: _currentSliderValue,
               max: 10,
