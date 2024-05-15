@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:memex/utiils/share_helper.dart';
@@ -7,42 +6,48 @@ import 'package:memex/utiils/widget_to_image.dart';
 
 class MemeScreen extends StatefulWidget {
   final List<XFile?>? images;
+  final int totalCategories;
   final List<String> text;
 
   const MemeScreen({
     super.key,
     required this.images,
     required this.text,
+    required this.totalCategories,
   });
 
   @override
-  _MemeScreenState createState() => _MemeScreenState();
+  MemeScreenState createState() => MemeScreenState();
 }
 
-class _MemeScreenState extends State<MemeScreen> {
-  final List<List<XFile?>> _imageLists = [
-    [], // First - 0
-    [], // Second - 1
-    [], // Third - 2
-    [], // Fourth - 3
-  ];
-
-  final List<Color> _colors = [
-    Colors.red.shade400,
-    Colors.green.shade400,
-    Colors.blue.shade400,
-    Colors.yellow.shade400,
-
-  ];
+class MemeScreenState extends State<MemeScreen> {
+  late List<List<XFile?>> _imageLists;
 
   int _draggedIndex = -1;
   int _targetIndex = -1;
 
   GlobalKey globalKey = GlobalKey();
 
+  final List<Color> _colors = [
+    Colors.red.shade200,
+    Colors.green.shade200,
+    Colors.blue.shade200,
+    Colors.yellow.shade200,
+    Colors.orange.shade200,
+    Colors.purple.shade200,
+    Colors.teal.shade200,
+    Colors.pink.shade200,
+    Colors.indigo.shade200,
+    Colors.amber.shade200,
+  ];
+
   @override
   void initState() {
-    _imageLists[3] = widget.images ?? [];
+    _imageLists = List.generate(
+      widget.totalCategories,
+      (index) => <XFile>[],
+    );
+    _imageLists[0] = widget.images ?? [];
     super.initState();
   }
 
@@ -64,50 +69,53 @@ class _MemeScreenState extends State<MemeScreen> {
         centerTitle: true,
         backgroundColor: const Color(0xFF17181A),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          RepaintBoundary(
-            key: globalKey,
-            child: draggableView(),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              MaterialButton(
-                onPressed: () async {
-                  File file = await WidgetToImage.getImageFromWidget(globalKey);
-                  await ShareHelper.shareImageFromPath(
-                    fileName: "memified",
-                    imageData: file.readAsBytesSync(),
-                  );
-                },
-                color: Colors.blue,
-                textColor: Colors.white,
-                child: const Text("Share Image"),
-              ),
-              MaterialButton(
-                onPressed: () async {
-                  final XFile? image = await ImagePicker().pickImage(
-                    source: ImageSource.gallery,
-                  );
-                  if (image != null) {
-                    setState(() {
-                      _imageLists[3].add(image);
-                    });
-                  }
-                },
-                color: Colors.blue,
-                textColor: Colors.white,
-                child: const Text("Add Image"),
-              ),
-            ],
-          ),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RepaintBoundary(
+              key: globalKey,
+              child: draggableView(),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                MaterialButton(
+                  onPressed: () async {
+                    File file =
+                        await WidgetToImage.getImageFromWidget(globalKey);
+                    await ShareHelper.shareImageFromPath(
+                      fileName: "memified",
+                      imageData: file.readAsBytesSync(),
+                    );
+                  },
+                  color: Colors.blue,
+                  textColor: Colors.white,
+                  child: const Text("Share Image"),
+                ),
+                MaterialButton(
+                  onPressed: () async {
+                    final XFile? image = await ImagePicker().pickImage(
+                      source: ImageSource.gallery,
+                    );
+                    if (image != null) {
+                      setState(() {
+                        _imageLists[0].add(image);
+                      });
+                    }
+                  },
+                  color: Colors.blue,
+                  textColor: Colors.white,
+                  child: const Text("Add Image"),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -185,12 +193,16 @@ class _MemeScreenState extends State<MemeScreen> {
           padding: const EdgeInsets.all(8),
           color: _colors[_imageLists.indexOf(imageList)],
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                widget.text[_imageLists.indexOf(imageList)],
-                style: const TextStyle(color: Colors.black, fontSize: 20),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+              SizedBox(
+                width: 50,
+                child: Text(
+                  widget.text[_imageLists.indexOf(imageList)],
+                  style: const TextStyle(color: Colors.black, fontSize: 20),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
               _buildListView(_imageLists.indexOf(imageList)),
             ],
